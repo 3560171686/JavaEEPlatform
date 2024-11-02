@@ -19,7 +19,8 @@ spring:
     #JDBC驱动
     driver-class-name: com.mysql.cj.jdbc.Driver
     #数据库服务器url
-    url: jdbc:mysql://mysql:3306/oomall_demo?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://1.94.237.80:3306/oomall_demo?serverTimezone=Asia/Shanghai
+    # url: jdbc:mysql://mysql:3306/oomall_demo?serverTimezone=Asia/Shanghai
     #数据库服务器用户名和密码
     username: demouser
     password: 123456

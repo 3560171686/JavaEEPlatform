@@ -36,6 +36,7 @@
 
     <!--    定义构建的方法-->
     <build>
+        <defaultGoal>compile</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>

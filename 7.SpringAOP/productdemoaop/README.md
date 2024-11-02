@@ -7,7 +7,7 @@
 <br>先更新ubuntu的安装源
 <br>`apt-get update`
 <br>再安装docker
-<br>`apt-get install docker.io`
+<br>apt-get install docker.io
 
 ### 安装jdk17和maven
 选择一台服务器作为编译用服务器。安装jdk17和maven
@@ -73,7 +73,7 @@
 
 ### 编译productdemoaop
 将代码从服务器上克隆下来，`git clone https://codehub.devcloud.cn-north-4.huaweicloud.com/OOMALL00024/JavaEEPlatform.git`
-<br>在JavaEEPlatform/7.SpringAOP/productdemoaop目录下运行
+    <br>在JavaEEPlatform/7.SpringAOP/productdemoaop目录下运行
 <br>`mvn clean pre-integration-test -Dmaven.test.skip=true`
 <br>在编译完成后用`docker images`能看到镜像已经在本地存在
 
