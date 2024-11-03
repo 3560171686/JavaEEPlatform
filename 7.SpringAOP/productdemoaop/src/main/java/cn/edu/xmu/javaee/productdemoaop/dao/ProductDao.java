@@ -11,6 +11,7 @@ import cn.edu.xmu.javaee.productdemoaop.mapper.generator.ProductPoMapper;
 import cn.edu.xmu.javaee.productdemoaop.mapper.generator.po.OnSalePo;
 import cn.edu.xmu.javaee.productdemoaop.mapper.generator.po.ProductPo;
 import cn.edu.xmu.javaee.productdemoaop.mapper.generator.po.ProductPoExample;
+import cn.edu.xmu.javaee.productdemoaop.mapper.join.ProductMapper;
 import cn.edu.xmu.javaee.productdemoaop.mapper.manual.ProductAllMapper;
 import cn.edu.xmu.javaee.productdemoaop.mapper.manual.po.ProductAllPo;
 import cn.edu.xmu.javaee.productdemoaop.util.CloneFactory;
@@ -39,11 +40,14 @@ public class ProductDao {
 
     private ProductAllMapper productAllMapper;
 
+    private ProductMapper productMapper;
+
     @Autowired
-    public ProductDao(ProductPoMapper productPoMapper, OnSaleDao onSaleDao, ProductAllMapper productAllMapper) {
+    public ProductDao(ProductPoMapper productPoMapper, OnSaleDao onSaleDao, ProductAllMapper productAllMapper, ProductMapper productMapper) {
         this.productPoMapper = productPoMapper;
         this.onSaleDao = onSaleDao;
         this.productAllMapper = productAllMapper;
+        this.productMapper = productMapper;
     }
 
     /**
@@ -188,4 +192,33 @@ public class ProductDao {
         logger.debug("findProductByID_manual: product = {}", product);
         return product;
     }
+
+              /**
+     * 使用 join 查询获取完整的商品信息
+     * @param id 商品ID
+     * @return 完整的商品对象
+     * @throws BusinessException 如果商品不存在
+     */
+    public Product getProductAllPoById(Long id) throws BusinessException {
+        ProductAllPo productAllPo = productMapper.getProductAllPoById(id);
+        if (productAllPo == null) {
+            throw new BusinessException(ReturnNo.RESOURCE_ID_NOTEXIST, "产品ID不存在");
+        }
+
+        Product product = CloneFactory.copy(new Product(), productAllPo);
+        product.setOtherProduct(productAllPo.getOtherProduct().stream()
+                .map(po -> CloneFactory.copy(new Product(), po))
+                .collect(Collectors.toList()));
+        product.setOnSaleList(productAllPo.getOnSaleList().stream()
+                .map(po -> CloneFactory.copy(new OnSale(), po))
+                .collect(Collectors.toList()));
+
+        logger.debug("getProductAllPoById: product = {}", product);
+        return product;
+    }
+
+    public List<ProductAllPo> findProductByName_join(String name) {
+        return productMapper.findProductByName_join(name);
+    }
+
 }

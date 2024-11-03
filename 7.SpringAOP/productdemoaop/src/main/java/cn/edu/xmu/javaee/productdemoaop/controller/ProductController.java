@@ -4,6 +4,7 @@ import cn.edu.xmu.javaee.core.exception.BusinessException;
 import cn.edu.xmu.javaee.core.model.ReturnObject;
 import cn.edu.xmu.javaee.productdemoaop.controller.dto.ProductDto;
 import cn.edu.xmu.javaee.productdemoaop.dao.bo.Product;
+import cn.edu.xmu.javaee.productdemoaop.mapper.manual.po.ProductAllPo;
 import cn.edu.xmu.javaee.productdemoaop.service.ProductService;
 import cn.edu.xmu.javaee.productdemoaop.util.CloneFactory;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,7 +44,10 @@ public class ProductController {
         Product product = null;
         if (null != type && "manual" == type){
             product = productService.findProductById_manual(id);
-        } else {
+        } else if (null != type && "join" == type){
+            product = productService.getProductAllPoById(id);
+        }
+        else  {
             product = productService.retrieveProductByID(id, true);
         }
         ProductDto productDto = CloneFactory.copy(new ProductDto(), product);
@@ -54,16 +58,30 @@ public class ProductController {
 
 
     @GetMapping("")
-    public ReturnObject searchProductByName(@RequestParam String name, @RequestParam(required = false, defaultValue = "auto") String type) {
-        ReturnObject retObj = null;
-        List<Product> productList = null;
-        if (null != type && "manual" == type){
+    public ReturnObject searchProductByName(
+            @RequestParam String name,
+            @RequestParam(required = false, defaultValue = "auto") String type) {
+
+        ReturnObject retObj;
+        List<Product> productList;
+
+        // 判断查询类型
+        if ("manual".equals(type)) {
             productList = productService.findProductByName_manual(name);
+        } else if ("join".equals(type)) {
+            productList = productService.findProductByName_join(name);
         } else {
             productList = productService.retrieveProductByName(name, true);
         }
-        List<ProductDto> data = productList.stream().map(o->CloneFactory.copy(new ProductDto(),o)).collect(Collectors.toList());
+
+        // 转换 Product 对象为 ProductDto
+        List<ProductDto> data = productList.stream()
+                .map(o -> CloneFactory.copy(new ProductDto(), o))
+                .collect(Collectors.toList());
+
+        // 返回结果
         retObj = new ReturnObject(data);
-        return  retObj;
+        return retObj;
     }
+
 }
